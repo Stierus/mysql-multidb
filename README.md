@@ -26,6 +26,16 @@ $ docker run --name test-mysql -e MYSQL_DATABASES="foo mar" -e MYSQL_PASSWORDS="
 
 ... will create two databases, `foo` and `bar`, and two users, `foo` and `bar`. `foo` will have the password `secretpassword1` and `bar` will have the password `secretpassword2`.
 
+## Creating additional databases (e.g., for testing)
+
+Django likes to use a separate database for testing, by default named `test_<YOUR DATABASE NAME>`. You can create and grant privileges to work with such a database by using the `MYSQL_EXTRA_DATABASES` environment variable, which can include variables in the form of `%%DATABASE%%` or `%%USER%%`.
+
+```console
+$ docker run --name test-mysql -e MYSQL_DATABASES="foo mar" -e MYSQL_EXTRA_DATABASES="test_%%DATABASE%%" -d jamesmallen/mysql-multidb
+```
+... will create four databases, `foo`, `test_foo`, `bar`, and `test_bar`, and two users, `foo` and `bar`, both of which have an empty password.
+
+
 ## `docker compose` usage
 
 ```yaml
@@ -67,3 +77,6 @@ Set this to a space separated list of database users to create. Each user will h
 ### `MYSQL_PASSWORDS`
 
 Set this to a space separated list of passwords to assign to the respective user in `MYSQL_USERS`. If this is unset, it will create users with empty passwords.
+
+### `MYSQL_EXTRA_DATABASES`
+

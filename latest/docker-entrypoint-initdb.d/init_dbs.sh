@@ -31,8 +31,10 @@ for i in "${!MYSQL_DATABASES[@]}"; do
     "${mysql[@]}" -e "CREATE DATABASE \`${database}\` ; GRANT ALL ON \`${database}\`.* TO '${user}'@'%' ;"
 	set +x
 	for extra_db in "${MYSQL_EXTRA_DATABASES[@]}"; do
+		full_extra_db=$(echo "${extra_db}" | \
+		                sed 's/%%DATABASE%%/'"$database"'/g;s/%%USER%%/'"$user"'/g')
 		set -x
-		"${mysql[@]}" -e "GRANT ALL ON \`${extra_db}${service}\`.* TO '${service}'@'%' ;"
+		"${mysql[@]}" -e "CREATE DATABASE \`${full_extra_db}\` ; GRANT ALL ON \`${full_extra_db}\`.* TO '${user}'@'%' ;"
 		set +x
     done
 done
