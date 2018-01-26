@@ -17,7 +17,7 @@ for i in "${!MYSQL_DATABASES[@]}"; do
 	database="${MYSQL_DATABASES[$i]}"
 	user="${MYSQL_USERS[$i]}"
 	password="${MYSQL_PASSWORDS[$i]}"
-	echo "creating database ${database}..."
+	echo "Creating database ${database}..."
 	if [ -z "${password}" ]; then
 		set -x
 		"${mysql[@]}" -e "CREATE USER '${user}'@'%' ;"
