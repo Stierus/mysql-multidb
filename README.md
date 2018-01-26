@@ -4,6 +4,54 @@ MySQL Docker image to create multiple users/databases using environment variable
 
 GitHub: https://github.com/jamesmallen/mysql-multidb
 
+# Why would I want this?
+
+For production, it is often recommended to have separate database instances for every service. For testing and local development, though, it is often convenient to have a single database container shared by multiple services. It's possible to do this by creating scripts and using the official [mysql](https://hub.docker.com/_/mysql/) Docker image. This image makes it easier to set up a multi-database server for testing/development using only environment variables.
+
+# How to use this image
+
+## Quickstart
+
+```console
+$ docker run --name test-mysql -e MYSQL_DATABASES="foo bar" -d jamesmallen/mysql-multidb
+```
+
+... will create two databases, `foo` and `bar`, and two users, `foo` and `bar`, both of which have an empty password.
+
+## Setting passwords
+
+```console
+$ docker run --name test-mysql -e MYSQL_DATABASES="foo mar" -e MYSQL_PASSWORDS="secretpassword1 secretpassword2" -d jamesmallen/mysql-multidb
+```
+
+... will create two databases, `foo` and `bar`, and two users, `foo` and `bar`. `foo` will have the password `secretpassword1` and `bar` will have the password `secretpassword2`.
+
+## `docker compose` usage
+
+```yaml
+version: '2'
+services:
+  db:
+    image: jamesmallen/mysql-multidb
+    environment:
+      MYSQL_DATABASES: foo bar
+  foo:
+    image: python
+    # ...
+  bar:
+    image: python
+    # ...
+```
+
+If you wish to be able to access the database from your host machine, make sure to map port `3306`:
+
+```yaml
+  db:
+    # ...
+    ports:
+      - 3306:3306
+```
+
 ## Environment Variables
 
 All of the original `mysql` environment variables are still usable (see https://hub.docker.com/r/library/mysql/), although one variable has been changed by default. `MYSQL_ALLOW_EMPTY_PASSWORD` is set to `yes`, meaning that the default `root` account has a blank password. This is insecure by design - this image is designed to be used only in local development and automated testing environments.
